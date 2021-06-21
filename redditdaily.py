@@ -7,40 +7,60 @@ from datetime import datetime as dt
 
 #Read in CSVs and return a dictionary of tickers
 def get_stocklist():
+    #Dictionary for storing tickers and counts
     tickerDict = {}
+    #Your CSVs for storing tickers to scan
     fileList = ['list1.csv', 'list2.csv', 'list3.csv']
+    #For each CSV
     for file in fileList:
+        #Read the CSV into a Pandas DataFrame
         tickerList = pd.read_csv(file, skiprows=0, skip_blank_lines=True)
+        #Transform the DataFrame into a list
         tickerList = tickerList[tickerList.columns[0]].tolist()
-
+        #For each ticker in the list
         for ticker in tickerList:
-            tickerDict[ticker] = 1
+            #Populate the dictionary of tickers with a count of 0
+            tickerDict[ticker] = 0
     return tickerDict
 
-
-def get_tickers(sub, stockList):
+#Use the Reddit API to count mentions
+def get_tickers(sub, tickerDict):
+    #The following link points to the sign up form for a Reddit API key:
+    #https://docs.google.com/forms/d/e/1FAIpQLSezNdDNK1-P8mspSbmtC2r86Ee9ZRbC66u929cG2GX0T9UMyw/viewform
     reddit = praw.Reddit(client_id='CLIENT ID', \
                          client_secret='SECRET KEY', \
                          user_agent='USER AGENT', \
                          username='USERNAME', \
                          password='PASSWORD')
-
+    #Dictionary for storing tickers and mention counts
     dailyTickers = {}
+    #Regular expression pattern for matching mentions
     regexPattern = r'\b([A-Z]+)\b'
-    tickerDict = stockList
+    #Blacklist certain tickers, tags or symbols which are confusing, i.e. shared with crypto 
     blacklist = ['A', 'I', 'DD', 'WSB', 'YOLO', 'RH', 'EV', 'PE', 'ETH', 'BTC', 'E']
+    #For each thread in the subreddit, sorted by top today
     for thread in reddit.subreddit(sub).top('day'):
+        #Get the thread title
         strings = [thread.title]
+        #Do not look at comments beyond "show more"
         thread.comments.replace_more(limit=0)
+        #For each comment in the thread
         for comment in thread.comments.list():
+            #Append the commen
             strings.append(comment.body)
+        #For each character in the string
         for s in strings:
+            #Find matches
             for phrase in re.findall(regexPattern, s):
+                #Check if the ticker has been blacklisted
                 if phrase not in blacklist:
                     if phrase in tickerDict:
+                        #Check if the ticker has already been recorded
                         if phrase not in dailyTickers:
+                            #If not, create the key and set its count to 1
                             dailyTickers[phrase] = 1
                         else:
+                            #If the key exists, increment the count
                             dailyTickers[phrase] += 1
     return dailyTickers
 
