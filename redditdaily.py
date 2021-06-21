@@ -56,7 +56,7 @@ for sub in subs:
             topTickers[ticker] = dailyTickers[ticker]
 
 #Log the data
-with open('mydir/stockslog.csv','a') as file:
+with open('stockslog.csv','a') as file:
     #Get the current datetime object
     now = dt.now()
     #Parse datetime into string
@@ -65,7 +65,7 @@ with open('mydir/stockslog.csv','a') as file:
         file.write(now + ',' + ticker + ',' + str(topTickers[ticker]) + '\n')
 
 top10 = sorted(topTickers, key=topTickers.get, reverse=True)[:10]
-with open('mydir/topstocks.csv','w') as file:
+with open('topstocks.csv','w') as file:
     file.write('ticker,mentions\n')
     for top in top10:
         file.write(top + ',' + str(topTickers[top]) + '\n')
