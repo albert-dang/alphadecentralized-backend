@@ -63,7 +63,7 @@ for sub in subs:
         else:
             topTickers[ticker] = dailyTickers[ticker]
 
-#Log the data scraped in the datalake
+#Log the data
 with open('mydir/stockslog.csv','a') as file:
     #Get the current datetime object
     now = dt.now()
