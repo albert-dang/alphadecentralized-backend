@@ -5,13 +5,6 @@ import re
 import pandas as pd
 from datetime import datetime as dt
 
-#Read in and return a list of top tickers from the previous execution
-def get_prev_tickers():
-    prev = open('prev.txt', 'r')
-    prevTickers = prev.readlines()
-    prev.close()
-    return prevTickers
-
 #Read in CSVs and return a dictionary of tickers
 def get_stocklist():
     tickerDict = {}
@@ -51,7 +44,6 @@ def get_tickers(sub, stockList):
                             dailyTickers[phrase] += 1
     return dailyTickers
 
-prevTickers = get_prev_tickers()
 subs = ['wallstreetbets', 'wallstreetbetsnew', 'stocks', 'investing', 'smallstreetbets']
 stockList = get_stocklist()
 topTickers = {}
